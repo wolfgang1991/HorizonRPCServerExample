@@ -69,6 +69,8 @@ class ProcedureHandler : public IRemoteProcedureCaller, IRemoteProcedureCallRece
 		overrideValues.batteryLevels = std::vector<float>{(float)(0.5+0.5*sin(2.0*3.14*0.25*t)), (float)(0.5+0.5*cos(2.0*3.14*0.25*t))};
 		overrideValues.batteryWarningLevels = std::vector<int32_t>{((int32_t)t)%3, ((int32_t)t+1)%3};
 		overrideValues.warningLevels = std::vector<int32_t>{((int32_t)t)%3, ((int32_t)t+1)%3};
+		overrideValues.range.type = RangeSpecification::FIXED_CIRCLE;
+		overrideValues.range.radius = 100000.0*(0.5+0.5*sin(2.0*3.14*0.25*t));
 	}
 	
 	void fillSensorData(){

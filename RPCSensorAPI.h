@@ -86,22 +86,61 @@ namespace RPCSensorAPI{
 		
 	};
 	
+	//! specifies the range indication around the aircraft in the moving map
+	struct RangeSpecification{
+		
+		enum Type{
+			DISABLED,//! no range indication override
+			FIXED_CIRCLE,//! circle around current position with given radius
+			TYPE_COUNT
+		};
+		
+		uint8_t type;//! see Type enum
+		
+		union{
+			double radius;//! in meter
+			// TODO: other values for other future specification types / set of parameters (see Type enum and functions below)
+		};
+		
+		RangeSpecification(){
+			type = DISABLED;
+		}
+		
+		CREATE_BEGIN(RangeSpecification)
+			FILL_FIELD(type)
+			if(nativeValue.type==FIXED_CIRCLE){
+				FILL_FIELD(radius)
+			}
+		CREATE_END
+		
+		CREATE_NATIVE_BEGIN(RangeSpecification)
+			FILL_NATIVE_FIELD_IF_AVAILABLE(type, (uint8_t)DISABLED)
+			if(nativeValue.type==FIXED_CIRCLE){
+				FILL_NATIVE_FIELD_IF_AVAILABLE(radius, 0.0)
+			}
+		CREATE_NATIVE_END
+		
+	};
+	
 	struct OverrideValues{
 		
 		std::vector<float> batteryLevels;//! multiple levels will be indicated if more than one present
 		std::vector<int32_t> batteryWarningLevels;//! warning levels for battery levels (standard warning colors will be used if unspecified)
 		std::vector<int32_t> warningLevels;//! multiple warning colors will be indicated if more than one present (for warning lamp indication)
+		RangeSpecification range;
 		
 		CREATE_BEGIN(OverrideValues)
 			FILL_FIELD(batteryLevels)
 			FILL_FIELD(batteryWarningLevels)
 			FILL_FIELD(warningLevels)
+			FILL_FIELD(range)
 		CREATE_END
 		
 		CREATE_NATIVE_BEGIN(OverrideValues)
 			FILL_NATIVE_FIELD_IF_AVAILABLE(batteryLevels, std::vector<float>{0.f})
 			FILL_NATIVE_FIELD_IF_AVAILABLE(batteryWarningLevels, {})
 			FILL_NATIVE_FIELD_IF_AVAILABLE(warningLevels, std::vector<int32_t>{WarningLevel::BAD})
+			FILL_NATIVE_FIELD_IF_AVAILABLE(range, RangeSpecification())
 		CREATE_NATIVE_END
 		
 	};
